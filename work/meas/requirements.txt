@@ -1,0 +1,8 @@
+# Windows + Python 3.12/3.14
+# 安装：pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+opencv-python>=4.10
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8
+pandas>=2.0
+openpyxl>=3.1

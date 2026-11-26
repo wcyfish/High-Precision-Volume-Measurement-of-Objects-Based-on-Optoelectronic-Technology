@@ -1,0 +1,27 @@
+# 通用
+.DS_Store
+Thumbs.db
+*.log
+
+# Node
+node_modules/
+dist/
+.next/
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# 所有虚拟环境（venv/、venv312/、venv_backup/ ...）
+venv*/
+
