@@ -12,7 +12,7 @@
 | 工作距离 | 镜头前到台面 480–520 mm（模型 496 mm） |
 | 曝光 | 手动 200–250 ms（先试 200 ms） |
 | 增益 | 0 |
-| 光源 | 背光常亮；两拍法时激光关 |
+| 光源 | 背光常亮（本方案不用激光） |
 | 台面 | 玻璃上表面定义为 z=0 |
 
 两台相机都装好、调好焦、锁光圈后，**完全退出 GalaxyView**（它会占用相机）。
@@ -34,11 +34,12 @@ cd C:\Users\86189\Desktop\DSH\work\meas
 
 ## 2. 台面位姿
 
-棋盘**平放在玻璃上**，左右各拍一张（可先用交互模式拍，再改名）：
+棋盘**平放在玻璃上**，左右各拍一张：
 
 ```powershell
-copy calib\stereo\left\pair_0021.png  calib\stage_left.png
-copy calib\stereo\right\pair_0021.png calib\stage_right.png
+.\venv312\Scripts\python.exe gx_stereo_capture.py --pairs 1 --interval 0 --out calib\stage_pair
+copy calib\stage_pair\left\pair_0001.png  calib\stage_left.png
+copy calib\stage_pair\right\pair_0001.png calib\stage_right.png
 ```
 
 ## 3. 标定
@@ -63,10 +64,10 @@ copy calib\stereo\right\pair_0021.png calib\stage_right.png
 
 ```powershell
 .\venv312\Scripts\python.exe gx_stereo_capture.py --pairs 1 --interval 0 --out shots
-# 或交互模式按 SPACE 存一对，再改名为 shots\left.png / shots\right.png
+# 或交互模式按 SPACE 存一对
 
 .\venv312\Scripts\python.exe measure_stereo.py `
-  --left shots\left.png --right shots\right.png `
+  --left shots\left\pair_0001.png --right shots\right\pair_0001.png `
   --stereo calib\stereo.npz --stage calib\stereo_stage.npz `
   --shape l --out shots\debug_l.png
 ```
