@@ -16,6 +16,7 @@ import argparse
 import glob
 import os
 import sys
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -56,9 +57,10 @@ def calibrate_one(objp, pts, size):
 
 
 def main():
+    base = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser()
-    ap.add_argument("--left", default="calib/stereo/left")
-    ap.add_argument("--right", default="calib/stereo/right")
+    ap.add_argument("--left", default=str(base / "calib/stereo/left"))
+    ap.add_argument("--right", default=str(base / "calib/stereo/right"))
     ap.add_argument("--pattern", default="11x8")
     ap.add_argument("--square", type=float, default=20.01)
     ap.add_argument("--refine", action="store_true", help="stereoCalibrate 同时优化内参")
@@ -66,7 +68,7 @@ def main():
     ap.add_argument("--stage-right", default="")
     ap.add_argument("--board-thickness", type=float, default=0.0,
                     help="标定板厚度 mm（板面到玻璃的距离）")
-    ap.add_argument("--out", default="calib/stereo.npz")
+    ap.add_argument("--out", default=str(base / "calib/stereo.npz"))
     args = ap.parse_args()
 
     pattern = parse_pattern(args.pattern)
@@ -80,7 +82,8 @@ def main():
         if os.path.exists(fr) and base.lower().endswith((".png", ".jpg", ".jpeg", ".bmp")):
             pairs.append((fn, fr))
     if not pairs:
-        print("没有成对图片：", args.left, args.right)
+        print("没有成对图片：", os.path.abspath(args.left),
+              os.path.abspath(args.right))
         return 2
 
     obj_pts, pts1, pts2, used, size = [], [], [], [], None
