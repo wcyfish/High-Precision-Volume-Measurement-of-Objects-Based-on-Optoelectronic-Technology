@@ -87,12 +87,21 @@ def make_mask(gray, thr=0.5, ref=None):
     return mask, ref
 
 
-def largest_contour(mask):
+def largest_contour(mask, reject_border=True):
+    """最大轮廓；默认丢弃贴图像边的轮廓（桌沿/画面边缘常比物体还大）。"""
     cnts, hier = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     if not cnts:
         return None, None, None
-    idx = int(np.argmax([cv2.contourArea(c) for c in cnts]))
-    return cnts[idx], cnts, hier
+    h, w = mask.shape[:2]
+    best, best_area = None, -1.0
+    for c in cnts:
+        x, y, ww, hh = cv2.boundingRect(c)
+        if reject_border and (x <= 1 or y <= 1 or x + ww >= w - 1 or y + hh >= h - 1):
+            continue
+        a = float(cv2.contourArea(c))
+        if a > best_area:
+            best, best_area = c, a
+    return best, cnts, hier
 
 
 def warp_mask(mask, H, size, scale=1.0):

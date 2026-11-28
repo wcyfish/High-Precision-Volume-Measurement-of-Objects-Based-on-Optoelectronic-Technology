@@ -48,7 +48,7 @@ def measure_masks(m1, m2, st, stage, shape="auto", hmin=0.0, hmax=160.0, step=0.
 
     cnt, cnts, hier = largest_contour(m1)
     if cnt is None:
-        raise RuntimeError("左图没有找到剪影")
+        raise RuntimeError("左图没有找到剪影：轮廓都贴边，或背景不是均匀亮场")
 
     # 高度扫描只看外轮廓：孔在底口（z=0），warp 到 z=H 会错位，不能参与 IoU
     m1f = _fill_holes(m1)
@@ -62,9 +62,10 @@ def measure_masks(m1, m2, st, stage, shape="auto", hmin=0.0, hmax=160.0, step=0.
 
     hole_cnt = None
     if shape in ("auto", "cylinder") and cnts is not None and hier is not None:
-        idx = int(np.argmax([cv2.contourArea(c) for c in cnts]))
-        holes = [c for j, c in enumerate(cnts)
-                 if j != idx and hier[0][j][3] == idx and cv2.contourArea(c) > 50]
+        idx = next((i for i, c in enumerate(cnts) if c is cnt), -1)
+        holes = ([c for j, c in enumerate(cnts)
+                  if j != idx and hier[0][j][3] == idx and cv2.contourArea(c) > 50]
+                 if idx >= 0 else [])
         if holes:
             hole_cnt = max(holes, key=cv2.contourArea)
 
